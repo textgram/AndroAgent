@@ -13,9 +13,11 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.hardware.Camera
-import android.media.MediaProjection
-import android.media.MediaProjectionManager
+import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.BatteryManager
@@ -63,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         var currentMediaProjection: MediaProjection? = null
         var currentMediaRecorder: MediaRecorder? = null
         var currentVideoFile: File? = null
-        var currentVirtualDisplay: android.hardware.display.VirtualDisplay? = null
+        var currentVirtualDisplay: VirtualDisplay? = null
 
         fun getDeviceId(context: Context): String {
             val prefs = context.getSharedPreferences("agent_prefs", Context.MODE_PRIVATE)
@@ -185,11 +187,7 @@ class MainActivity : AppCompatActivity() {
         }
         val perm = requiredPermissions[permissionIndex]
         statusText?.text = "Requesting permission: ${perm.split(".").last()}"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && perm == Manifest.permission.POST_NOTIFICATIONS) {
-            ActivityCompat.requestPermissions(this, arrayOf(perm), 100 + permissionIndex)
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(perm), 100 + permissionIndex)
-        }
+        ActivityCompat.requestPermissions(this, arrayOf(perm), 100 + permissionIndex)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -339,7 +337,7 @@ class MainActivity : AppCompatActivity() {
                 setVideoEncoder(MediaRecorder.VideoEncoder.H264)
                 setVideoSize(width, height)
                 setVideoFrameRate(30)
-                setVideoBitRate(4 * 1024 * 1024)
+                setVideoEncodingBitRate(4 * 1024 * 1024)
                 setOutputFile(videoFile.absolutePath)
                 prepare()
             }
@@ -349,7 +347,7 @@ class MainActivity : AppCompatActivity() {
             val virtualDisplay = projection.createVirtualDisplay(
                 "ScreenRecord",
                 width, height, dpi,
-                android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 mediaRecorder.surface,
                 null, null
             )
